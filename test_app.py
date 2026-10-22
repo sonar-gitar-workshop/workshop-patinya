@@ -21,6 +21,17 @@ def test_create_order(client):
     assert response.json["total_cents"] == 5000
 
 
+def test_client_supplied_price_is_ignored(client):
+    response = client.post(
+        "/orders",
+        json={"items": [{"sku": "WIDGET-A", "quantity": 2, "unit_price_cents": 1}]},
+    )
+
+    assert response.status_code == 201
+    assert response.json["items"][0]["unit_price_cents"] == 2500
+    assert response.json["total_cents"] == 5000
+
+
 def test_get_order(client):
     created = client.post(
         "/orders", json={"items": [{"sku": "DESK-LAMP", "quantity": 1}]}
